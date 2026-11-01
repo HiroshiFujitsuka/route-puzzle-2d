@@ -108,6 +108,9 @@ InitTestScene*.unity*
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
 
+# Code Editor
+.vsconfig
+
 # =========================================================================
 # AI駆動開発用の追加設定
 # =========================================================================
