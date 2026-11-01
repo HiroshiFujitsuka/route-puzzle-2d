@@ -107,3 +107,19 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+# =========================================================================
+# AI駆動開発用の追加設定
+# =========================================================================
+
+# APIキーや環境変数を保存するファイル
+.env
+.env.local
+*.env
+config.json
+
+# エディタ（VS Code / Rider）関連の一時ファイル
+.vscode/
+.idea/
+*.sln
+*.csproj
