@@ -57,6 +57,7 @@ namespace RoutePuzzle.Puzzle
         public bool IsCleared { get; private set; }
         public bool IsStuck { get; private set; }
 
+        /// <summary>StageMasterから、タイル配置・ワープの対・必要チェックポイント数を読み込んで初期状態を作る。</summary>
         public StageState(StageMaster master)
         {
             var warpFirst = new Dictionary<int, Vector2Int>();
@@ -99,6 +100,7 @@ namespace RoutePuzzle.Puzzle
             IsStuck = ComputeStuck();
         }
 
+        /// <summary>指定座標が通過済み（進入不可）か。</summary>
         public bool IsVisited(Vector2Int pos) => visited.Contains(pos);
 
         /// <summary>現在の回転状態を反映した、タイルの進入可能方向。</summary>
@@ -107,8 +109,10 @@ namespace RoutePuzzle.Puzzle
         /// <summary>現在の回転状態を反映した、タイルの許容方向（STRAIGHTは軸、TURNは出口）。</summary>
         public Direction GetAllowedDirections(StageTileData t) => t.allowedDirections.RotateClockwise(RotationCount);
 
+        /// <summary>指定座標の特殊タイル。配置が無い座標（床）はnull。</summary>
         StageTileData TileAt(Vector2Int pos) => tiles.TryGetValue(pos, out var t) ? t : null;
 
+        /// <summary>座標が8×8グリッド内か。外周ブロックはグリッド外として扱う。</summary>
         static bool InBounds(Vector2Int p)
             => p.x >= 0 && p.x < GridConst.Width && p.y >= 0 && p.y < GridConst.Height;
 
@@ -138,9 +142,11 @@ namespace RoutePuzzle.Puzzle
             }
         }
 
+        /// <summary>現在地から dir 方向へ通常入力で1マス進めるか（状態は変更しない）。</summary>
         bool CanStep(Direction dir)
             => CanLeave(PlayerPosition, dir) && CanEnter(PlayerPosition + dir.ToOffset(), dir);
 
+        /// <summary>詰み判定。順序違反、またはクリア前に4方向すべてへ進めない状態。</summary>
         bool ComputeStuck()
         {
             if (IsCleared) return false;
@@ -228,12 +234,14 @@ namespace RoutePuzzle.Puzzle
             return outcome;
         }
 
+        /// <summary>強制移動中の衝突結果（Died）を設定して返す。リセットは呼び出し側（演出後）で行う。</summary>
         MoveOutcome Die(MoveOutcome outcome)
         {
             outcome.Result = MoveResult.Died;
             return outcome;
         }
 
+        /// <summary>必要数のチェックポイントを達成していればゴールをアンロックし、通知フラグを立てる。</summary>
         void UnlockGoalIfReady(MoveOutcome outcome)
         {
             if (GoalUnlocked || CheckpointCount < requiredCheckpoints) return;
