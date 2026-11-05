@@ -155,19 +155,23 @@ namespace RoutePuzzle.Master
                 if (t.tileType == TileType.STRAIGHT && t.allowedDirections != vertical && t.allowedDirections != horizontal)
                     errors.Add($"({t.x},{t.y}) STRAIGHT: allowedDirections は Up|Down または Left|Right である必要があります。");
                 if (t.tileType == TileType.TURN)
-                {
-                    CheckTurnMask(t, "entryDirections", t.entryDirections, errors);
-                    CheckTurnMask(t, "allowedDirections", t.allowedDirections, errors);
-                }
+                    CheckTurnMask(t, errors);
             }
         }
 
-        static void CheckTurnMask(StageTileData t, string field, Direction mask, List<string> errors)
+        /// <summary>TURN の allowedDirections は、隣り合う2辺（Up|Right, Right|Down, Down|Left, Left|Up のいずれか）であること。</summary>
+        static void CheckTurnMask(StageTileData t, List<string> errors)
         {
-            if (mask == Direction.None)
-                errors.Add($"({t.x},{t.y}) TURN: {field} が None です。");
-            else if (((int)mask & ~(int)DirectionExtensions.All) != 0)
-                errors.Add($"({t.x},{t.y}) TURN: {field} に定義外のビットが含まれています（{(int)mask}）。");
+            var mask = t.allowedDirections;
+            if (((int)mask & ~(int)DirectionExtensions.All) != 0)
+            {
+                errors.Add($"({t.x},{t.y}) TURN: allowedDirections に定義外のビットが含まれています（{(int)mask}）。");
+                return;
+            }
+            bool corner = mask == (Direction.Up | Direction.Right) || mask == (Direction.Right | Direction.Down)
+                || mask == (Direction.Down | Direction.Left) || mask == (Direction.Left | Direction.Up);
+            if (!corner)
+                errors.Add($"({t.x},{t.y}) TURN: allowedDirections は隣り合う2辺（例: Up|Right）である必要があります（{(int)mask}）。");
         }
 
         // 6, 7. FORCE_MOVE の連鎖経路: 方向指定・BLOCK/外周への衝突禁止・循環禁止
