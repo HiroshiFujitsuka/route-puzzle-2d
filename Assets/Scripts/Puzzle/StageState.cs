@@ -49,6 +49,9 @@ namespace RoutePuzzle.Puzzle
         readonly Vector2Int startPosition;
         readonly int requiredCheckpoints;
 
+        /// <summary>現在のマスへ入ったときの移動方向（TURN の出口判定用）。</summary>
+        Direction lastMove;
+
         public Vector2Int PlayerPosition { get; private set; }
         public int RotationCount { get; private set; }
         public int CheckpointCount { get; private set; }
@@ -92,6 +95,7 @@ namespace RoutePuzzle.Puzzle
             visited.Clear();
             visited.Add(startPosition);
             PlayerPosition = startPosition;
+            lastMove = Direction.None;
             RotationCount = 0;
             CheckpointCount = 0;
             OrderViolated = false;
@@ -103,10 +107,7 @@ namespace RoutePuzzle.Puzzle
         /// <summary>指定座標が通過済み（進入不可）か。</summary>
         public bool IsVisited(Vector2Int pos) => visited.Contains(pos);
 
-        /// <summary>現在の回転状態を反映した、タイルの進入可能方向。</summary>
-        public Direction GetEntryDirections(StageTileData t) => t.entryDirections.RotateClockwise(RotationCount);
-
-        /// <summary>現在の回転状態を反映した、タイルの許容方向（STRAIGHTは軸、TURNは出口）。</summary>
+        /// <summary>現在の回転状態を反映した、タイルの接続方向（STRAIGHTは軸、TURNは接続する2辺）。</summary>
         public Direction GetAllowedDirections(StageTileData t) => t.allowedDirections.RotateClockwise(RotationCount);
 
         /// <summary>指定座標の特殊タイル。配置が無い座標（床）はnull。</summary>
@@ -121,8 +122,11 @@ namespace RoutePuzzle.Puzzle
         {
             var t = TileAt(pos);
             if (t == null) return true;
-            if (t.tileType == TileType.STRAIGHT || t.tileType == TileType.TURN)
+            if (t.tileType == TileType.STRAIGHT)
                 return GetAllowedDirections(t).Has(dir);
+            // TURN: 入った辺（直前の移動方向の反対側）以外の接続辺へ出る。
+            if (t.tileType == TileType.TURN)
+                return GetAllowedDirections(t).Has(dir) && dir != lastMove.Opposite();
             return true;
         }
 
@@ -137,7 +141,8 @@ namespace RoutePuzzle.Puzzle
                 case TileType.BLOCK: return false;
                 case TileType.GOAL: return GoalUnlocked;
                 case TileType.STRAIGHT: return GetAllowedDirections(t).Has(dir);
-                case TileType.TURN: return GetEntryDirections(t).Has(dir);
+                // 接続する2辺のどちらからでも入れる（辺 = 移動方向の反対側）。
+                case TileType.TURN: return GetAllowedDirections(t).Has(dir.Opposite());
                 default: return true;
             }
         }
@@ -168,6 +173,7 @@ namespace RoutePuzzle.Puzzle
             }
 
             var pos = PlayerPosition + dir.ToOffset();
+            lastMove = dir;
             while (true)
             {
                 visited.Add(pos);
@@ -226,6 +232,7 @@ namespace RoutePuzzle.Puzzle
                 if (next == null) break;
                 if (!CanEnter(next.Value, nextDir)) return Die(outcome);
                 pos = next.Value;
+                lastMove = nextDir;
             }
 
             outcome.Result = MoveResult.Moved;

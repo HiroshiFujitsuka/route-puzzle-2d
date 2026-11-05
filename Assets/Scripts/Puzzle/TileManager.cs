@@ -126,8 +126,7 @@ namespace RoutePuzzle.Puzzle
                     AddBars(root, state.GetAllowedDirections(data), new Color(0.1f, 0.3f, 0.6f));
                     break;
                 case TileType.TURN:
-                    // 濃い青=出口方向 / 薄い青=進入可能な移動方向
-                    AddBars(root, state.GetEntryDirections(data), new Color(0.35f, 0.55f, 0.85f));
+                    // 接続する2辺（L字）を表示する
                     AddBars(root, state.GetAllowedDirections(data), new Color(0.1f, 0.3f, 0.6f));
                     break;
                 case TileType.ORDERED_CHECKPOINT:
