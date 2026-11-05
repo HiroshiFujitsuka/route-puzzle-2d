@@ -24,10 +24,7 @@ namespace RoutePuzzle.Master
         [Tooltip("ORDERED_CHECKPOINT: 通過順序（1始まり）。0=未使用")]
         public int orderNo;
 
-        [Tooltip("TURN: 進入可能な移動方向（初期向き）")]
-        public Direction entryDirections;
-
-        [Tooltip("STRAIGHT: 入出可能な軸 / TURN: 出られる移動方向（初期向き）")]
+        [Tooltip("STRAIGHT: 入出可能な軸（Up|Down または Left|Right） / TURN: 接続する隣り合う2辺（例: Up|Right）。どちらの辺からも入れ、入った辺と反対側の辺へ出る。いずれも初期向き")]
         public Direction allowedDirections;
 
         public Vector2Int Position => new Vector2Int(x, y);

@@ -25,10 +25,12 @@ namespace RoutePuzzle.Master
     {
         public List<DifficultyData> difficulties = new List<DifficultyData>();
 
+        /// <summary>難易度IDに対応する行を返す。無ければ null。</summary>
         public DifficultyData Find(int difficultyId)
             => difficulties.Find(d => d.difficultyId == difficultyId);
 
 #if UNITY_EDITOR
+        /// <summary>エディタ上での入力ミス（ID重複・未定義の解放条件・循環参照）を警告する。</summary>
         void OnValidate()
         {
             var seen = new HashSet<int>();

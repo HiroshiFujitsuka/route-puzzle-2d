@@ -6,6 +6,7 @@ namespace RoutePuzzle.Master
     /// <summary>StageMasterの読み込み時検証。エラーメッセージのリストを返す（空なら正常）。</summary>
     public static class StageMasterValidator
     {
+        /// <summary>単一ステージのマスターを検証し、エラーメッセージの一覧を返す（空なら問題なし）。</summary>
         public static List<string> Validate(StageMaster stage)
         {
             var errors = new List<string>();
@@ -97,6 +98,7 @@ namespace RoutePuzzle.Master
         }
 #endif
 
+        /// <summary>指定種別のタイルがちょうど1つあることを検証する。</summary>
         static void CheckExactlyOne(List<StageTileData> tiles, TileType type, List<string> errors)
         {
             int count = 0;
@@ -105,6 +107,7 @@ namespace RoutePuzzle.Master
         }
 
         // 4. WARP: 総数は偶数、groupIdは1〜4、各groupIdにちょうど2タイル
+        /// <summary>ワープの総数が偶数で、グループIDが1〜4かつ各グループ2つであることを検証する。</summary>
         static void ValidateWarp(List<StageTileData> tiles, List<string> errors)
         {
             var counts = new Dictionary<int, int>();
@@ -126,6 +129,7 @@ namespace RoutePuzzle.Master
         }
 
         // 5. ORDERED_CHECKPOINT: orderNo が 1..N の連番で重複なし
+        /// <summary>順序付きチェックポイントの orderNo が 1..N の連番であることを検証する。</summary>
         static void ValidateOrderedCheckpoint(List<StageTileData> tiles, List<string> errors)
         {
             var orders = new List<int>();
@@ -145,6 +149,7 @@ namespace RoutePuzzle.Master
         }
 
         // 8, 9. STRAIGHT / TURN の方向指定
+        /// <summary>STRAIGHT / TURN の方向指定を検証する。</summary>
         static void ValidateStraightAndTurn(List<StageTileData> tiles, List<string> errors)
         {
             const Direction vertical = Direction.Up | Direction.Down;
@@ -155,22 +160,27 @@ namespace RoutePuzzle.Master
                 if (t.tileType == TileType.STRAIGHT && t.allowedDirections != vertical && t.allowedDirections != horizontal)
                     errors.Add($"({t.x},{t.y}) STRAIGHT: allowedDirections は Up|Down または Left|Right である必要があります。");
                 if (t.tileType == TileType.TURN)
-                {
-                    CheckTurnMask(t, "entryDirections", t.entryDirections, errors);
-                    CheckTurnMask(t, "allowedDirections", t.allowedDirections, errors);
-                }
+                    CheckTurnMask(t, errors);
             }
         }
 
-        static void CheckTurnMask(StageTileData t, string field, Direction mask, List<string> errors)
+        /// <summary>TURN の allowedDirections は、隣り合う2辺（Up|Right, Right|Down, Down|Left, Left|Up のいずれか）であること。</summary>
+        static void CheckTurnMask(StageTileData t, List<string> errors)
         {
-            if (mask == Direction.None)
-                errors.Add($"({t.x},{t.y}) TURN: {field} が None です。");
-            else if (((int)mask & ~(int)DirectionExtensions.All) != 0)
-                errors.Add($"({t.x},{t.y}) TURN: {field} に定義外のビットが含まれています（{(int)mask}）。");
+            var mask = t.allowedDirections;
+            if (((int)mask & ~(int)DirectionExtensions.All) != 0)
+            {
+                errors.Add($"({t.x},{t.y}) TURN: allowedDirections に定義外のビットが含まれています（{(int)mask}）。");
+                return;
+            }
+            bool corner = mask == (Direction.Up | Direction.Right) || mask == (Direction.Right | Direction.Down)
+                || mask == (Direction.Down | Direction.Left) || mask == (Direction.Left | Direction.Up);
+            if (!corner)
+                errors.Add($"({t.x},{t.y}) TURN: allowedDirections は隣り合う2辺（例: Up|Right）である必要があります（{(int)mask}）。");
         }
 
         // 6, 7. FORCE_MOVE の連鎖経路: 方向指定・BLOCK/外周への衝突禁止・循環禁止
+        /// <summary>強制移動の向き・連鎖経路（BLOCK/外周への衝突、循環）を検証する。</summary>
         static void ValidateForceMove(List<StageTileData> tiles, Dictionary<Vector2Int, StageTileData> map, List<string> errors)
         {
             foreach (var start in tiles)

@@ -27,6 +27,19 @@ namespace RoutePuzzle.Master
             return (Direction)rotated;
         }
 
+        /// <summary>単一方向の反対向き（Up↔Down, Left↔Right）。単一方向以外はNoneを返す。</summary>
+        public static Direction Opposite(this Direction d)
+        {
+            switch (d)
+            {
+                case Direction.Up: return Direction.Down;
+                case Direction.Down: return Direction.Up;
+                case Direction.Left: return Direction.Right;
+                case Direction.Right: return Direction.Left;
+                default: return Direction.None;
+            }
+        }
+
         /// <summary>90°時計回りの回転を count 回適用する。</summary>
         public static Direction RotateClockwise(this Direction d, int count)
         {

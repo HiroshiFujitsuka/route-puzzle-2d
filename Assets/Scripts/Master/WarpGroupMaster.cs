@@ -24,6 +24,7 @@ namespace RoutePuzzle.Master
         public WarpGroupData Find(int groupId) => groups.Find(g => g.groupId == groupId);
 
 #if UNITY_EDITOR
+        /// <summary>エディタ上でのグループID重複・範囲外を警告する。</summary>
         void OnValidate()
         {
             if (groups.Count > GridConst.MaxWarpPairs)
