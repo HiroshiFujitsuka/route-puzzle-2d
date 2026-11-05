@@ -496,6 +496,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RoutePuzzle.Puzzle.BoardCameraFitter
   margin: 0.75
   portraitUpShift: 0.2
+  buttonArea: {fileID: 1142193620}
+  buttonGapPixels: 16
 --- !u!1 &466703696
 GameObject:
   m_ObjectHideFlags: 0
