@@ -114,8 +114,11 @@ namespace RoutePuzzle.Puzzle
                 else transform.position = target;
                 prev = target;
                 prevCell = cell;
-                tileManager.Refresh(State);
             }
+
+            // State は入力時点で最終状態まで進んでいる。途中で Refresh すると後続のマスが先に通過済み表示になるため、
+            // 経路の再生が終わってから盤面へ反映する。
+            tileManager.Refresh(State);
 
             if (outcome.GoalUnlockedNow) GoalUnlocked?.Invoke();
 
