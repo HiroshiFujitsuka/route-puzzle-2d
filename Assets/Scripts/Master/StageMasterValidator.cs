@@ -75,6 +75,28 @@ namespace RoutePuzzle.Master
             return errors;
         }
 
+#if UNITY_EDITOR
+        /// <summary>プロジェクト内の全StageMasterを集め、個別検証と重複検査(ValidateStageSet)をまとめて実行する。</summary>
+        [UnityEditor.MenuItem("RoutePuzzle/Validate All Stages")]
+        public static void ValidateAllStagesInProject()
+        {
+            var stages = new List<StageMaster>();
+            foreach (var guid in UnityEditor.AssetDatabase.FindAssets("t:StageMaster"))
+            {
+                var path = UnityEditor.AssetDatabase.GUIDToAssetPath(guid);
+                var s = UnityEditor.AssetDatabase.LoadAssetAtPath<StageMaster>(path);
+                if (s != null) stages.Add(s);
+            }
+
+            int errorCount = 0;
+            foreach (var s in stages)
+                foreach (var e in Validate(s)) { Debug.LogWarning($"[StageMaster] {s.name}: {e}", s); errorCount++; }
+            foreach (var e in ValidateStageSet(stages)) { Debug.LogWarning($"[StageMaster] {e}"); errorCount++; }
+
+            Debug.Log($"[StageMaster] 検証完了: {stages.Count} ステージ / 問題 {errorCount} 件");
+        }
+#endif
+
         static void CheckExactlyOne(List<StageTileData> tiles, TileType type, List<string> errors)
         {
             int count = 0;
