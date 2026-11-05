@@ -20,6 +20,13 @@ namespace RoutePuzzle.Puzzle
             var errors = StageMasterValidator.Validate(stage);
             foreach (var e in errors) Debug.LogWarning($"[StageBootstrap] {stage.name}: {e}", stage);
 
+            // 不正なマスターで開始すると StageState が破綻するため、エラーがあれば初期化しない。
+            if (errors.Count > 0)
+            {
+                Debug.LogError($"[StageBootstrap] {stage.name}: 検証エラーが {errors.Count} 件あるため開始しません。", stage);
+                return;
+            }
+
             player.Initialize(stage);
         }
     }
