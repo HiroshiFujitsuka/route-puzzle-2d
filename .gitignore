@@ -126,3 +126,7 @@ config.json
 .idea/
 *.sln
 *.csproj
+
+# Claude Code / Unity MCP (local settings)
+.mcp.json
+.claude/
