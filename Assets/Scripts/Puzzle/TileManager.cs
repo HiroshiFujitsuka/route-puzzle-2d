@@ -139,6 +139,7 @@ namespace RoutePuzzle.Puzzle
             }
         }
 
+        /// <summary>mask の各方向に対応するマスの辺側へ、方向を示すバーを追加する。</summary>
         void AddBars(Transform root, Direction mask, Color color)
         {
             foreach (var d in new[] { Direction.Up, Direction.Right, Direction.Down, Direction.Left })
@@ -153,6 +154,7 @@ namespace RoutePuzzle.Puzzle
             }
         }
 
+        /// <summary>指定セルに色付きの正方形スプライトを生成する。</summary>
         SpriteRenderer CreateSquare(Vector2Int cell, Color color, int order, Transform parent)
         {
             var go = new GameObject($"Cell_{cell.x}_{cell.y}");
@@ -167,6 +169,7 @@ namespace RoutePuzzle.Puzzle
             return sr;
         }
 
+        /// <summary>parent の子として、指定倍率の色付き正方形スプライトを生成する。</summary>
         SpriteRenderer CreateChildSquare(Transform parent, Color color, float scale)
         {
             var go = new GameObject("Marker");

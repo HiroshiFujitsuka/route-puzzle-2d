@@ -77,6 +77,7 @@ namespace RoutePuzzle.Puzzle
             playing = StartCoroutine(Play(outcome));
         }
 
+        /// <summary>プレイヤーの見た目（仮素材のスプライト）を未生成なら作る。</summary>
         void EnsureBody()
         {
             if (body != null) return;
@@ -88,6 +89,7 @@ namespace RoutePuzzle.Puzzle
             body.sortingOrder = 5;
         }
 
+        /// <summary>ステージ開始時の状態を盤面・プレイヤー・ステートへ反映し、入力を受け付ける状態に戻す。</summary>
         void ApplyStartState()
         {
             if (playing != null) { StopCoroutine(playing); playing = null; }
@@ -99,6 +101,7 @@ namespace RoutePuzzle.Puzzle
             StuckChanged?.Invoke(State.IsStuck);
         }
 
+        /// <summary>1入力ぶんの移動結果（経路・ワープ・終了状態）を再生する。</summary>
         IEnumerator Play(MoveOutcome outcome)
         {
             Phase = PuzzlePhase.Moving;
@@ -138,6 +141,7 @@ namespace RoutePuzzle.Puzzle
             playing = null;
         }
 
+        /// <summary>隣のマスへ stepDuration かけて滑らかに移動する。</summary>
         IEnumerator Slide(Vector3 from, Vector3 to)
         {
             for (float t = 0f; t < stepDuration; t += Time.deltaTime)
@@ -148,6 +152,7 @@ namespace RoutePuzzle.Puzzle
             transform.position = to;
         }
 
+        /// <summary>消滅演出を再生し、終わったらステージ開始状態へリセットする。</summary>
         IEnumerator Die()
         {
             Phase = PuzzlePhase.Dying;
@@ -163,6 +168,7 @@ namespace RoutePuzzle.Puzzle
             ApplyStartState();
         }
 
+        /// <summary>クリア演出を再生し、終わったら Cleared イベントを通知する。</summary>
         IEnumerator Clear()
         {
             Phase = PuzzlePhase.Clearing;

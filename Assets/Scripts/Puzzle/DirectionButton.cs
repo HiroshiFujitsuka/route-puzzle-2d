@@ -16,6 +16,7 @@ namespace RoutePuzzle.Puzzle
             GetComponent<Button>().onClick.AddListener(OnClick);
         }
 
+        /// <summary>登録したクリックリスナーを解除する。</summary>
         void OnDestroy()
         {
             var button = GetComponent<Button>();

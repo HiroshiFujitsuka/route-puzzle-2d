@@ -14,12 +14,14 @@ namespace RoutePuzzle.Puzzle
         Camera cam;
         int lastWidth, lastHeight;
 
+        /// <summary>Camera を取得し、正射影に設定する。</summary>
         void Awake()
         {
             cam = GetComponent<Camera>();
             cam.orthographic = true;
         }
 
+        /// <summary>画面サイズが変わったときだけカメラを再調整する。</summary>
         void LateUpdate()
         {
             if (Screen.width == lastWidth && Screen.height == lastHeight) return;

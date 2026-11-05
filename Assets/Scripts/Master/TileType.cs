@@ -35,6 +35,7 @@ namespace RoutePuzzle.Master
     {
         static readonly Dictionary<TileType, string> ExclusiveGroups = BuildExclusiveGroups();
 
+        /// <summary>ExclusiveGroup 属性から、タイル種別ごとの排他グループ名の対応表を作る。</summary>
         static Dictionary<TileType, string> BuildExclusiveGroups()
         {
             var map = new Dictionary<TileType, string>();

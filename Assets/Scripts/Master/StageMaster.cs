@@ -22,6 +22,7 @@ namespace RoutePuzzle.Master
         public List<StageTileData> tiles = new List<StageTileData>();
 
 #if UNITY_EDITOR
+        /// <summary>エディタ上でマスターの検証エラーを警告として表示する。</summary>
         void OnValidate()
         {
             var errors = StageMasterValidator.Validate(this);
