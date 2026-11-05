@@ -156,12 +156,18 @@ namespace RoutePuzzle.Master
                     errors.Add($"({t.x},{t.y}) STRAIGHT: allowedDirections は Up|Down または Left|Right である必要があります。");
                 if (t.tileType == TileType.TURN)
                 {
-                    if (t.entryDirections == Direction.None)
-                        errors.Add($"({t.x},{t.y}) TURN: entryDirections が None です。");
-                    if (t.allowedDirections == Direction.None)
-                        errors.Add($"({t.x},{t.y}) TURN: allowedDirections が None です。");
+                    CheckTurnMask(t, "entryDirections", t.entryDirections, errors);
+                    CheckTurnMask(t, "allowedDirections", t.allowedDirections, errors);
                 }
             }
+        }
+
+        static void CheckTurnMask(StageTileData t, string field, Direction mask, List<string> errors)
+        {
+            if (mask == Direction.None)
+                errors.Add($"({t.x},{t.y}) TURN: {field} が None です。");
+            else if (((int)mask & ~(int)DirectionExtensions.All) != 0)
+                errors.Add($"({t.x},{t.y}) TURN: {field} に定義外のビットが含まれています（{(int)mask}）。");
         }
 
         // 6, 7. FORCE_MOVE の連鎖経路: 方向指定・BLOCK/外周への衝突禁止・循環禁止
